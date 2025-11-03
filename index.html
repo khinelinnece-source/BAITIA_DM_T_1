@@ -1,847 +1,715 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Next Horizon: Management & IT Innovation</title>
-    
-    <!-- Tailwind CSS -->
+    <!-- Load Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- Icons (Lucide) -->
-    <script src="https://unpkg.com/lucide-react@0.292.0/dist/lucide-react.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lucide-static@latest/umd/lucide.js"></script>
-
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', '-apple-system', '"Noto Sans TC"', '"Noto Sans"', '"Noto Sans Myanmar"', '"Segoe UI"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-                    },
-                    animation: {
-                        'gradient-bg': 'gradient-bg 15s ease infinite',
-                    },
-                    keyframes: {
-                        'gradient-bg': {
-                            '0%, 100%': { backgroundPosition: '0% 50%' },
-                            '50%': { backgroundPosition: '100% 50%' },
-                        },
-                    },
-                },
-            },
-        }
-    </script>
+    <!-- Load Lucide Icons for Toggles -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Set Inter as the default font -->
     <style>
-        /* Custom styles for components and animations */
-        .animated-gradient {
-            background: linear-gradient(-45deg, #e0f2fe, #d1fae5, #fef3c7, #fee2e2);
-            background-size: 400% 400%;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --ncnu-blue: #0066cc; /* NCNU Theme Color */
+            --ncnu-blue-light: #4c9cdb;
         }
-        .dark .animated-gradient {
-             background: linear-gradient(-45deg, #0c4a6e, #064e3b, #78350f, #7f1d1d);
-             background-size: 400% 400%;
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.75;
         }
-        /* Respects user preference for reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            .animated-gradient {
-                animation: none;
-            }
+        /* Custom scrollbar for aesthetics */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--ncnu-blue-light); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #f0f0f0; }
+
+        /* Custom configuration for Tailwind */
+        .group:hover .group-hover-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-        /* Basic accordion and modal transitions */
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-in-out;
+        .text-ncnu-blue { color: var(--ncnu-blue); }
+        .bg-ncnu-blue { background-color: var(--ncnu-blue); }
+        .hover\:bg-ncnu-blue-light:hover { background-color: var(--ncnu-blue-light); }
+
+        /* Dark Mode Specific Styling */
+        .dark {
+            --ncnu-blue-light: #6aa8d8; /* Slightly lighter for better dark mode contrast */
         }
-        .accordion-content.open {
-            max-height: 1000px; /* Large enough for content */
+        .dark ::-webkit-scrollbar-track { background: #2d3748; }
+
+        /* Custom utility for subtle animations on interactive elements */
+        .animate-subtle {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Ensures dropdown arrows in selects are visible in dark mode */
-        .dark select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        /* Hidden mobile menu */
+        #mobile-menu {
+            transition: transform 0.3s ease-out;
+            transform: translateY(-100%);
         }
-        [aria-current="page"] {
-             color: #3b82f6; /* or your theme's primary color */
-             font-weight: 600;
+        #mobile-menu.open {
+            transform: translateY(0);
         }
-        .dark [aria-current="page"] {
-             color: #60a5fa;
-        }
+
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans antialiased transition-colors duration-300">
 
-    <!-- Trial Site Notice -->
-    <div id="trial-notice" class="relative bg-amber-100 dark:bg-amber-900/50 border-b border-amber-200 dark:border-amber-800 p-3 text-center text-sm text-amber-800 dark:text-amber-200">
-        <span data-i18n-key="trail.notice">Note: This is a Trial website for a group project of the Digital Marketing course (elective in BAITIA).</span>
-        <button id="dismiss-notice-btn" aria-label="Dismiss notice" class="absolute top-1/2 right-4 -translate-y-1/2 text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200">
-             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-    </div>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
 
-    <!-- Header -->
-    <header class="sticky top-0 z-40 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo and Project Title -->
-                <div class="flex items-center space-x-4">
-                    <a href="https://baitia.ncnu.edu.tw/p/404-1084-24750.php?Lang=en" class="flex items-center space-x-2">
-                        <div class="p-2 bg-blue-600 rounded-lg text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="m12 9 1.5 3 2 0-1.5 2 0.5 3-2.5-1.5L10 20l0.5-3-1.5-2 2 0Z"/></svg>
-                        </div>
-                        <div>
-                             <h1 class="text-lg font-bold text-slate-900 dark:text-white" data-i18n-key="hero.title.short">Next Horizon</h1>
-                             <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n-key="hero.subtitle.short">Management & IT Innovation</p>
-                        </div>
-                    </a>
+    <!-- Sticky Header & Navigation Bar -->
+    <header id="header" class="sticky top-0 z-50 shadow-md bg-white/95 backdrop-blur-sm dark:bg-gray-900/95 border-b border-gray-200 dark:border-gray-800 animate-subtle">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col md:flex-row md:items-center justify-between">
+                <!-- Project Title & Institutional Links -->
+                <div class="flex-shrink-0 mb-2 md:mb-0">
+                    <h1 class="text-xl sm:text-2xl font-extrabold text-ncnu-blue" data-i18n="projectTitle"></h1>
+                    <div class="flex flex-wrap text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        <!-- ARIA roles for navigation links -->
+                        <span role="navigation" aria-label="Affiliation Links">
+                            <a href="https://www.ncnu.edu.tw/" target="_blank" class="hover:text-ncnu-blue animate-subtle rounded-md p-1 -m-1" data-i18n="ncnuLink"></a>
+                            <span class="mx-1">|</span>
+                            <a href="https://baitia.ncnu.edu.tw/p/404-1084-24750.php?Lang=en" target="_blank" class="hover:text-ncnu-blue animate-subtle rounded-md p-1 -m-1" data-i18n="baitiaLink"></a>
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex items-center space-x-8">
-                    <a href="https://baitia.ncnu.edu.tw/p/404-1084-24750.php?Lang=en" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400" data-i18n-key="nav.home">Home</a>
-                    <a href="#faculty" data-page="faculty-page" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400" data-i18n-key="nav.faculty">Faculty</a>
-                    <a href="#curriculum" data-page="curriculum-page" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400" data-i18n-key="nav.curriculum">Curriculum</a>
-                    <a href="#admission" data-page="admission-page" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400" data-i18n-key="nav.admission">Admission</a>
-                    <a href="#faq" data-page="faq-page" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400" data-i18n-key="nav.faq">FAQ</a>
-                </nav>
+                <!-- Toggles and Mobile Menu Button -->
+                <div class="flex items-center space-x-3">
+                    <!-- Language Toggle -->
+                    <button id="lang-toggle" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-ncnu-blue animate-subtle" aria-label="Toggle Language" title="Toggle Language">
+                        <i data-lucide="globe" class="w-5 h-5"></i>
+                    </button>
 
-                <!-- Right-side controls -->
-                <div class="flex items-center space-x-4">
-                    <!-- Language & Theme Toggles -->
-                    <div class="flex items-center space-x-2">
-                        <div class="relative">
-                            <select id="language-switcher" aria-label="Select language" class="text-sm appearance-none bg-transparent py-1 pl-2 pr-7 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <option value="en">EN</option>
-                                <option value="zh-TW">繁中</option>
-                                <option value="vi">VI</option>
-                                <option value="my">မြန်မာ</option>
-                            </select>
-                             <svg class="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/></svg>
-                        </div>
-                        <button id="theme-toggle" aria-label="Toggle dark mode" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                            <svg id="theme-icon-light" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                            <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                        </button>
-                    </div>
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-ncnu-blue animate-subtle" aria-label="Toggle Dark/Light Mode" title="Toggle Dark/Light Mode">
+                        <i id="theme-icon" data-lucide="sun" class="w-5 h-5"></i>
+                    </button>
+
                     <!-- Mobile Menu Button -->
-                    <div class="md:hidden">
-                        <button id="mobile-menu-btn" class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700">
-                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-                        </button>
-                    </div>
+                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-ncnu-blue animate-subtle" aria-label="Open Menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
                 </div>
             </div>
+
+            <!-- Main Desktop Navigation -->
+            <nav class="hidden md:flex mt-4 space-x-6 text-sm font-medium" role="navigation" aria-label="Main Navigation">
+                <a href="#home" class="nav-link text-ncnu-blue border-b-2 border-ncnu-blue pb-1 animate-subtle" data-i18n="navHome"></a>
+                <a href="#faculty" class="nav-link text-gray-600 dark:text-gray-300 hover:text-ncnu-blue hover:border-b-2 hover:border-ncnu-blue pb-1 animate-subtle" data-i18n="navFaculty"></a>
+                <a href="#curriculum" class="nav-link text-gray-600 dark:text-gray-300 hover:text-ncnu-blue hover:border-b-2 hover:border-ncnu-blue pb-1 animate-subtle" data-i18n="navCurriculum"></a>
+                <a href="#admission" class="nav-link text-gray-600 dark:text-gray-300 hover:text-ncnu-blue hover:border-b-2 hover:border-ncnu-blue pb-1 animate-subtle" data-i18n="navAdmission"></a>
+                <a href="#faq" class="nav-link text-gray-600 dark:text-gray-300 hover:text-ncnu-blue hover:border-b-2 hover:border-ncnu-blue pb-1 animate-subtle" data-i18n="navFAQ"></a>
+            </nav>
         </div>
-        <!-- Mobile Navigation Menu -->
-        <div id="mobile-menu" class="hidden md:hidden absolute top-16 left-0 w-full bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                 <a href="https://baitia.ncnu.edu.tw/p/404-1084-24750.php?Lang=en" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium" data-i18n-key="nav.home">Home</a>
-                 <a href="#faculty" data-page="faculty-page" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium" data-i18n-key="nav.faculty">Faculty</a>
-                 <a href="#curriculum" data-page="curriculum-page" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium" data-i18n-key="nav.curriculum">Curriculum</a>
-                 <a href="#admission" data-page="admission-page" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium" data-i18n-key="nav.admission">Admission</a>
-                 <a href="#faq" data-page="faq-page" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium" data-i18n-key="nav.faq">FAQ</a>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <nav id="mobile-menu" class="fixed inset-x-0 top-[6.5rem] bg-white/95 dark:bg-gray-900/95 shadow-lg border-t border-gray-200 dark:border-gray-800 md:hidden" role="navigation" aria-label="Mobile Navigation">
+            <div class="px-4 pt-4 pb-6 space-y-3 font-medium text-lg">
+                <a href="#home" class="block py-2 text-ncnu-blue hover:text-ncnu-blue-light animate-subtle border-b border-gray-100 dark:border-gray-800" data-i18n="navHome"></a>
+                <a href="#faculty" class="block py-2 text-gray-800 dark:text-gray-200 hover:text-ncnu-blue-light animate-subtle border-b border-gray-100 dark:border-gray-800" data-i18n="navFaculty"></a>
+                <a href="#curriculum" class="block py-2 text-gray-800 dark:text-gray-200 hover:text-ncnu-blue-light animate-subtle border-b border-gray-100 dark:border-gray-800" data-i18n="navCurriculum"></a>
+                <a href="#admission" class="block py-2 text-gray-800 dark:text-gray-200 hover:text-ncnu-blue-light animate-subtle border-b border-gray-100 dark:border-gray-800" data-i18n="navAdmission"></a>
+                <a href="#faq" class="block py-2 text-gray-800 dark:text-gray-200 hover:text-ncnu-blue-light animate-subtle border-b border-gray-100 dark:border-gray-800" data-i18n="navFAQ"></a>
             </div>
-        </div>
+        </nav>
     </header>
 
-    <main>
-        <!-- Home Page -->
-        <section id="home-page" class="page-section">
-            <!-- Hero Section -->
-            <div class="relative overflow-hidden">
-                <div class="absolute inset-0 animated-gradient animation-gradient-bg"></div>
-                <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8 text-center">
-                    <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl md:text-6xl" data-i18n-key="hero.title">Next Horizon: Management & IT Innovation</h2>
-                    <p class="mt-6 max-w-2xl mx-auto text-lg text-slate-700 dark:text-slate-300" data-i18n-key="hero.subtitle">A Master's program at NCNU's BAITIA — bridging management strategy with cutting-edge IT applications.</p>
-                    <div class="mt-8 flex justify-center gap-4 flex-wrap">
-                        <a href="https://baitia.ncnu.edu.tw/p/404-1084-24750.php?Lang=en" target="_blank" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                            <span data-i18n-key="cta.apply">Apply Now</span>
-                        </a>
-                        <a href="#curriculum" data-page="curriculum-page" class="nav-link inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 dark:text-white dark:bg-blue-500/50 dark:hover:bg-blue-500/70">
-                            <span data-i18n-key="cta.curriculum">View Curriculum</span>
-                        </a>
-                    </div>
-                    <div class="mt-12 text-center text-sm">
-                         <a href="https://www.ncnu.edu.tw" target="_blank" class="text-slate-600 dark:text-slate-400 hover:underline" data-i18n-key="link.ncnu">National Chi Nan University (NCNU)</a>
-                         <span class="mx-2 text-slate-400">|</span>
-                         <a href="https://baitia.ncnu.edu.tw/p/404-1084-24750.php?Lang=en" target="_blank" class="text-slate-600 dark:text-slate-400 hover:underline" data-i18n-key="link.baitia">Dept. of Business Admission & Innovation Technology</a>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Featured Panels -->
-            <div class="py-16 bg-white dark:bg-slate-800/50">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <!-- Program Overview -->
-                        <div class="p-6 rounded-lg shadow-lg bg-slate-50 dark:bg-slate-800 hover:shadow-xl transition-shadow">
-                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-                            </div>
-                            <h3 class="mt-4 text-lg font-medium" data-i18n-key="home.feature1.title">Program Overview</h3>
-                            <p class="mt-2 text-base text-slate-500 dark:text-slate-400" data-i18n-key="home.feature1.desc">Discover a unique curriculum that blends business acumen with technological expertise, preparing you for leadership roles in the digital economy.</p>
-                        </div>
-                        <!-- Curriculum Snapshot -->
-                         <div class="p-6 rounded-lg shadow-lg bg-slate-50 dark:bg-slate-800 hover:shadow-xl transition-shadow">
-                             <div class="flex items-center justify-center h-12 w-12 rounded-md bg-emerald-500 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                            </div>
-                             <h3 class="mt-4 text-lg font-medium" data-i18n-key="home.feature2.title">Curriculum Snapshot</h3>
-                             <p class="mt-2 text-base text-slate-500 dark:text-slate-400" data-i18n-key="home.feature2.desc">Explore core courses, specialized tracks, and hands-on projects designed to build practical skills and theoretical knowledge.</p>
-                        </div>
-                        <!-- Faculty Spotlight -->
-                        <div class="p-6 rounded-lg shadow-lg bg-slate-50 dark:bg-slate-800 hover:shadow-xl transition-shadow">
-                             <div class="flex items-center justify-center h-12 w-12 rounded-md bg-rose-500 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            </div>
-                            <h3 class="mt-4 text-lg font-medium" data-i18n-key="home.feature3.title">Faculty Spotlight</h3>
-                             <p class="mt-2 text-base text-slate-500 dark:text-slate-400" data-i18n-key="home.feature3.desc">Learn from distinguished academics and industry experts who are leaders in their fields of research and practice.</p>
-                        </div>
-                    </div>
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- 1. HOME SECTION (Hero) -->
+        <section id="home" class="min-h-[70vh] flex items-center mb-16 md:mb-24 pt-20 -mt-20" aria-labelledby="home-heading">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <h2 id="home-heading" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 dark:text-white transition duration-500" data-i18n="heroTitle"></h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-300 transition duration-500" data-i18n="heroSubtitle"></p>
+                    <a href="https://baitia.ncnu.edu.tw/p/404-1084-24750.php?Lang=en" target="_blank" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-ncnu-blue hover:bg-ncnu-blue-light focus:outline-none focus:ring-4 focus:ring-ncnu-blue/50 animate-subtle group" data-i18n="heroButton" role="button" aria-label="Visit BAITIA Project Page">
+                        <i data-lucide="external-link" class="w-5 h-5 mr-2 transition group-hover:translate-x-1"></i>
+                    </a>
+                </div>
+                <!-- Placeholder Illustration (Conceptual) -->
+                <div class="hidden md:flex justify-center items-center">
+                    <svg class="w-full h-auto max-w-md text-ncnu-blue dark:text-ncnu-blue-light opacity-80" viewBox="0 0 100 100" fill="currentColor">
+                        <!-- Simplified icon representing Data (Cube), Management (Gears), and Innovation (Star) -->
+                        <rect x="5" y="55" width="30" height="30" rx="5" class="opacity-70"></rect>
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="10 5" class="animate-[spin_10s_linear_infinite]"></circle>
+                        <polygon points="50,15 55,30 70,30 60,40 65,55 50,45 35,55 40,40 30,30 45,30" class="fill-current"></polygon>
+                        <rect x="65" y="10" width="25" height="25" rx="5" class="opacity-70"></rect>
+                        <text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-size="10" fill="white" class="font-bold hidden dark:block">IT</text>
+                        <text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-size="10" fill="#0066cc" class="font-bold dark:hidden">IT</text>
+                    </svg>
                 </div>
             </div>
         </section>
 
-        <!-- Faculty Page -->
-        <section id="faculty-page" class="page-section hidden py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <h2 class="text-3xl font-extrabold" data-i18n-key="faculty.title">Our Faculty</h2>
-                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-500 dark:text-slate-400" data-i18n-key="faculty.subtitle">Meet the experts guiding the next generation of innovators.</p>
-                </div>
-                <!-- Faculty cards will be inserted here by JavaScript -->
-                <div id="faculty-grid" class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                </div>
+        <!-- Separator -->
+        <hr class="border-gray-200 dark:border-gray-700 my-16">
+
+        <!-- 2. FACULTY SECTION -->
+        <section id="faculty" class="mb-16 md:mb-24 pt-20 -mt-20" aria-labelledby="faculty-heading">
+            <h2 id="faculty-heading" class="section-heading" data-i18n="facultyHeader"></h2>
+            <p class="section-subheading" data-i18n="facultySubHeader"></p>
+
+            <div id="faculty-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+                <!-- Faculty Cards will be populated here by JS -->
             </div>
         </section>
 
-        <!-- Curriculum Page -->
-        <section id="curriculum-page" class="page-section hidden py-16 bg-white dark:bg-slate-800/50">
-             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                 <div class="lg:text-center">
-                     <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase" data-i18n-key="curriculum.heading">Program Structure</h2>
-                     <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight sm:text-4xl" data-i18n-key="curriculum.title">Curriculum Planning</p>
-                     <p class="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-400 lg:mx-auto" data-i18n-key="curriculum.subtitle">A flexible and comprehensive curriculum designed for innovation leaders.</p>
-                </div>
+        <!-- 3. CURRICULUM PLANNING SECTION -->
+        <section id="curriculum" class="mb-16 md:mb-24 pt-20 -mt-20" aria-labelledby="curriculum-heading">
+            <h2 id="curriculum-heading" class="section-heading" data-i18n="curriculumHeader"></h2>
+            <p class="section-subheading" data-i18n="curriculumSubHeader"></p>
 
-                <div class="mt-10">
-                    <p class="text-center text-lg mb-4" data-i18n-key="curriculum.desc">Our program combines core management principles with advanced IT topics. For a detailed breakdown of courses, credits, and graduation requirements, please visit the official curriculum page.</p>
-                    <div class="text-center mb-10">
-                         <a href="https://baitia.ncnu.edu.tw/p/404-1084-24760.php?Lang=en" target="_blank" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" data-i18n-key="curriculum.mainlink">
-                            View Official Curriculum Plan
-                         </a>
+            <div class="mt-10 max-w-4xl mx-auto">
+                <!-- Main Curriculum Link -->
+                <a href="https://baitia.ncnu.edu.tw/p/404-1084-24760.php?Lang=en" target="_blank" class="block p-5 mb-6 border-2 border-dashed border-ncnu-blue/50 rounded-xl hover:bg-ncnu-blue/10 dark:hover:bg-gray-800 animate-subtle group" role="button" aria-label="View Main Curriculum Planning">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-semibold text-ncnu-blue" data-i18n="curriculumMainLinkTitle"></h3>
+                        <i data-lucide="arrow-right" class="w-6 h-6 text-ncnu-blue transition group-hover:translate-x-1"></i>
                     </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="curriculumMainLinkSubtitle"></p>
+                </a>
 
-                    <div class="max-w-xl mx-auto">
-                        <label for="department-links" class="block text-sm font-medium text-gray-700 dark:text-gray-300" data-i18n-key="curriculum.dropdown.label">Explore Related Department Curricula:</label>
-                        <select id="department-links" name="department-links" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-slate-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option data-i18n-key="curriculum.dropdown.default">Select a department...</option>
-                            <option value="https://baitia.ncnu.edu.tw/p/403-1084-1146.php?Lang=en" data-i18n-key="curriculum.dept.is">Department of International Studies</option>
-                            <option value="https://baitia.ncnu.edu.tw/p/403-1084-1148.php?Lang=en" data-i18n-key="curriculum.dept.bf">Department of Banking and Finance</option>
-                            <option value="https://baitia.ncnu.edu.tw/p/403-1084-1145.php?Lang=en" data-i18n-key="curriculum.dept.econ">Department of Economics</option>
-                            <option value="https://baitia.ncnu.edu.tw/p/403-1084-1147.php?Lang=en" data-i18n-key="curriculum.dept.im">Department of Information Management</option>
-                            <option value="https://baitia.ncnu.edu.tw/p/403-1084-1149.php?Lang=en" data-i18n-key="curriculum.dept.tourism">Department of Tourism</option>
-                            <option value="https://baitia.ncnu.edu.tw/p/403-1084-1151.php?Lang=en" data-i18n-key="curriculum.dept.cs">Department of Computer Science</option>
-                        </select>
-                    </div>
+                <div id="curriculum-list" class="space-y-4">
+                    <!-- Department Accordions will be populated here by JS -->
                 </div>
             </div>
         </section>
 
-        <!-- Admission Page -->
-        <section id="admission-page" class="page-section hidden py-16">
-             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                 <div class="text-center">
-                    <h2 class="text-3xl font-extrabold" data-i18n-key="admission.title">Admissions</h2>
-                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-500 dark:text-slate-400" data-i18n-key="admission.subtitle">Join us and start your journey towards becoming an industry leader.</p>
+        <!-- 4. ADMISSION SECTION -->
+        <section id="admission" class="mb-16 md:mb-24 pt-20 -mt-20" aria-labelledby="admission-heading">
+            <h2 id="admission-heading" class="section-heading" data-i18n="admissionHeader"></h2>
+            <p class="section-subheading" data-i18n="admissionSubHeader"></p>
+
+            <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Admissions Link Card -->
+                <div class="md:col-span-2 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+                    <h3 class="text-2xl font-bold text-ncnu-blue mb-4" data-i18n="admissionCardTitle"></h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6" data-i18n="admissionCardText"></p>
+                    <a href="https://baitia.ncnu.edu.tw/p/404-1084-24761.php?Lang=en" target="_blank" class="inline-block px-6 py-2 border-2 border-ncnu-blue text-ncnu-blue font-medium rounded-full hover:bg-ncnu-blue hover:text-white animate-subtle" data-i18n="admissionCardButton" role="button" aria-label="Visit Official Admission Page"></a>
                 </div>
 
-                <div class="mt-12">
-                    <h3 class="text-xl font-bold text-center mb-8" data-i18n-key="admission.steps.title">Application Process</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div class="p-6 border border-slate-200 dark:border-slate-700 rounded-lg">
-                             <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">1</div>
-                             <h4 class="mt-2 text-lg font-semibold" data-i18n-key="admission.step1.title">Prepare Documents</h4>
-                             <p class="mt-1 text-slate-500 dark:text-slate-400" data-i18n-key="admission.step1.desc">Gather your transcripts, letters of recommendation, and statement of purpose.</p>
-                        </div>
-                        <div class="p-6 border border-slate-200 dark:border-slate-700 rounded-lg">
-                             <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">2</div>
-                             <h4 class="mt-2 text-lg font-semibold" data-i18n-key="admission.step2.title">Submit Online</h4>
-                             <p class="mt-1 text-slate-500 dark:text-slate-400" data-i18n-key="admission.step2.desc">Complete the online application form and upload all required materials before the deadline.</p>
-                        </div>
-                        <div class="p-6 border border-slate-200 dark:border-slate-700 rounded-lg">
-                             <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">3</div>
-                             <h4 class="mt-2 text-lg font-semibold" data-i18n-key="admission.step3.title">Interview & Decision</h4>
-                             <p class="mt-1 text-slate-500 dark:text-slate-400" data-i18n-key="admission.step3.desc">Shortlisted candidates may be invited for an interview. Admission decisions will be sent via email.</p>
-                        </div>
-                    </div>
+                <!-- Inquiry/Contact Mock-up -->
+                <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-600">
+                    <h3 class="text-xl font-bold mb-4" data-i18n="inquiryTitle"></h3>
+                    <p class="text-sm mb-4 text-gray-600 dark:text-gray-300" data-i18n="inquiryText"></p>
+                    <form onsubmit="event.preventDefault(); showContactMessage();" aria-label="Admission Inquiry Form">
+                        <input type="email" placeholder="Email Address" class="w-full p-2 mb-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:ring-ncnu-blue focus:border-ncnu-blue transition duration-150" required>
+                        <textarea placeholder="Your Inquiry (Dummy)" class="w-full p-2 mb-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:ring-ncnu-blue focus:border-ncnu-blue transition duration-150" rows="3"></textarea>
+                        <button type="submit" class="w-full px-6 py-2 bg-ncnu-blue text-white font-medium rounded-lg hover:opacity-90 animate-subtle" data-i18n="inquiryButton"></button>
+                    </form>
+                    <div id="contact-message" class="mt-3 text-sm text-center text-green-600 dark:text-green-400" style="display:none;" data-i18n="inquirySuccess"></div>
                 </div>
-
-                 <div class="mt-16 max-w-3xl mx-auto bg-white dark:bg-slate-800/50 p-8 rounded-lg shadow-md">
-                     <h3 class="text-2xl font-bold text-center mb-6" data-i18n-key="admission.contact.title">Contact Admissions</h3>
-                     <form id="contact-form" class="space-y-6">
-                         <div>
-                             <label for="name" class="block text-sm font-medium" data-i18n-key="form.name.label">Full Name</label>
-                             <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                         </div>
-                         <div>
-                            <label for="email" class="block text-sm font-medium" data-i18n-key="form.email.label">Email Address</label>
-                            <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                         </div>
-                         <div>
-                             <label for="message" class="block text-sm font-medium" data-i18n-key="form.message.label">Your Message</label>
-                             <textarea id="message" name="message" rows="4" required class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
-                         </div>
-                         <div class="text-center">
-                            <button type="submit" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" data-i18n-key="form.submit">Send Message</button>
-                         </div>
-                     </form>
-                     <p id="form-status" class="mt-4 text-center"></p>
-                 </div>
             </div>
         </section>
 
-        <!-- FAQ Page -->
-        <section id="faq-page" class="page-section hidden py-16 bg-white dark:bg-slate-800/50">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <h2 class="text-3xl font-extrabold" data-i18n-key="faq.title">Frequently Asked Questions</h2>
-                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-500 dark:text-slate-400" data-i18n-key="faq.subtitle">Find answers to common questions about our program.</p>
-                </div>
-                <div class="mt-8">
-                    <input type="search" id="faq-search" class="w-full p-3 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-blue-500 focus:border-blue-500" placeholder="Search FAQs...">
-                </div>
-                <div id="faq-container" class="mt-8 space-y-4">
-                    <!-- FAQ items will be dynamically inserted here -->
-                </div>
+        <!-- 5. FAQ SECTION (Accordion) -->
+        <section id="faq" class="mb-16 md:mb-24 pt-20 -mt-20" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" class="section-heading" data-i18n="faqHeader"></h2>
+            <p class="section-subheading" data-i18n="faqSubHeader"></p>
+
+            <div id="faq-accordion" class="mt-10 max-w-4xl mx-auto space-y-4">
+                <!-- FAQs will be populated here by JS -->
             </div>
         </section>
+
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
-        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-500 dark:text-slate-400">
-            <p data-i18n-key="footer.address">National Chi Nan University, No. 1, Daxue Rd, Puli Township, Nantou County, 545</p>
-            <p class="mt-2">&copy; <span id="footer-year"></span> <span data-i18n-key="footer.copyright">Next Horizon Project Team. All Rights Reserved.</span></p>
-        </div>
-    </footer>
-    
-    <!-- Faculty Profile Modal -->
-    <div id="faculty-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div id="faculty-modal-panel" class="relative bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto transform transition-all opacity-0 translate-y-4">
-                <div class="p-6 md:p-8">
-                    <button id="close-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                    <div class="md:flex md:space-x-8">
-                        <img id="modal-img" src="" alt="" class="w-32 h-32 rounded-full mx-auto md:mx-0 object-cover flex-shrink-0">
-                        <div class="mt-4 md:mt-0 text-center md:text-left">
-                            <h3 id="modal-name" class="text-2xl font-bold"></h3>
-                            <p id="modal-title" class="text-blue-600 dark:text-blue-400 font-semibold"></p>
-                            <p id="modal-email" class="text-sm text-slate-500"></p>
-                            <div id="modal-tags" class="mt-2 flex flex-wrap gap-2 justify-center md:justify-start"></div>
-                        </div>
+    <footer class="bg-gray-800 dark:bg-gray-950 text-gray-300 dark:text-gray-400 py-8 mt-12 border-t-4 border-ncnu-blue" role="contentinfo">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Logo & Project Info -->
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <!-- Simplified NCNU Logo representation (C for Chi Nan) -->
+                        <div class="w-8 h-8 rounded-full bg-ncnu-blue flex items-center justify-center text-white font-black text-xl">N</div>
+                        <h4 class="text-lg font-bold text-white" data-i18n="projectTitleShort"></h4>
                     </div>
-                    <div class="mt-6 prose prose-slate dark:prose-invert max-w-none">
-                        <h4 data-i18n-key="modal.bio">Biography</h4>
-                        <p id="modal-bio"></p>
-                        <h4 data-i18n-key="modal.pubs">Recent Publications</h4>
-                        <ul id="modal-pubs"></ul>
-                    </div>
+                    <p class="text-sm" data-i18n="footerCredit"></p>
+                </div>
+
+                <!-- Footer Links -->
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-3" data-i18n="footerLinksHeader"></h4>
+                    <nav class="space-y-2 text-sm" aria-label="Footer Links">
+                        <a href="#" class="block hover:text-ncnu-blue animate-subtle" data-i18n="footerPrivacy"></a>
+                        <a href="#" class="block hover:text-ncnu-blue animate-subtle" data-i18n="footerSitemap"></a>
+                        <a href="https://www.ncnu.edu.tw/" target="_blank" class="block hover:text-ncnu-blue animate-subtle" data-i18n="footerNCNU"></a>
+                    </nav>
+                </div>
+
+                <!-- Contact Mock-up -->
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-3" data-i18n="footerContactHeader"></h4>
+                    <p class="text-sm">E-mail: baitia@ncnu.edu.tw</p>
+                    <p class="text-sm" data-i18n="footerAddress"></p>
                 </div>
             </div>
+
+            <!-- Copyright -->
+            <div class="text-center mt-8 pt-6 border-t border-gray-700 dark:border-gray-800">
+                <p class="text-sm">&copy; <span id="current-year"></span>. All Rights Reserved. <span data-i18n="ncnuCopy"></span></p>
+            </div>
         </div>
-    </div>
+    </footer>
 
-
+    <!-- JavaScript for Functionality and Interactivity -->
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
+        // --- Core Data Structure for Bilingual Content ---
+        const bilingualContent = {
+            // English: E, Traditional Chinese: TC
+            E: {
+                // Header & Nav
+                projectTitle: "Next Horizon: Management & IT Innovation",
+                projectTitleShort: "Next Horizon: Mgt & IT Innovation",
+                ncnuLink: "National Chi Nan University (NCNU)",
+                baitiaLink: "Department of Business Admission and Innovation Technology Innovation and Application (BAITIA)",
+                navHome: "Home",
+                navFaculty: "Faculty",
+                navCurriculum: "Curriculum Planning",
+                navAdmission: "Admission",
+                navFAQ: "FAQ",
 
-        // --- DATA ---
+                // Home
+                heroTitle: "Innovating the Future of Business and Technology",
+                heroSubtitle: "A collaborative initiative by NCNU's College of Management, focusing on digital transformation, entrepreneurship, and sustainable IT solutions.",
+                heroButton: "Visit BAITIA Project Homepage",
 
-        const translations = {
-            'en': {
-                'hero.title.short': 'Next Horizon',
-                'hero.subtitle.short': 'Management & IT Innovation',
-                'trail.notice': 'Note: This is a Trial website for a group project of the Digital Marketing course (elective in BAITIA).',
-                'nav.home': 'Home', 'nav.faculty': 'Faculty', 'nav.curriculum': 'Curriculum', 'nav.admission': 'Admission', 'nav.faq': 'FAQ',
-                'hero.title': "Next Horizon: Management & IT Innovation",
-                'hero.subtitle': "A Master's program at NCNU's BAITIA — bridging management strategy with cutting-edge IT applications.",
-                'cta.apply': 'Apply Now', 'cta.curriculum': 'View Curriculum',
-                'link.ncnu': 'National Chi Nan University (NCNU)', 'link.baitia': 'Dept. of Business Admission & Innovation Technology',
-                'home.feature1.title': 'Program Overview', 'home.feature1.desc': 'Discover a unique curriculum that blends business acumen with technological expertise, preparing you for leadership roles in the digital economy.',
-                'home.feature2.title': 'Curriculum Snapshot', 'home.feature2.desc': 'Explore core courses, specialized tracks, and hands-on projects designed to build practical skills and theoretical knowledge.',
-                'home.feature3.title': 'Faculty Spotlight', 'home.feature3.desc': 'Learn from distinguished academics and industry experts who are leaders in their fields of research and practice.',
-                'faculty.title': 'Our Faculty', 'faculty.subtitle': 'Meet the experts guiding the next generation of innovators.',
-                'modal.bio': 'Biography', 'modal.pubs': 'Recent Publications',
-                'curriculum.heading': 'Program Structure', 'curriculum.title': 'Curriculum Planning', 'curriculum.subtitle': 'A flexible and comprehensive curriculum designed for innovation leaders.',
-                'curriculum.desc': 'Our program combines core management principles with advanced IT topics. For a detailed breakdown of courses, credits, and graduation requirements, please visit the official curriculum page.',
-                'curriculum.mainlink': 'View Official Curriculum Plan',
-                'curriculum.dropdown.label': 'Explore Related Department Curricula:', 'curriculum.dropdown.default': 'Select a department...',
-                'curriculum.dept.is': 'Department of International Studies', 'curriculum.dept.bf': 'Department of Banking and Finance', 'curriculum.dept.econ': 'Department of Economics',
-                'curriculum.dept.im': 'Department of Information Management', 'curriculum.dept.tourism': 'Department of Tourism', 'curriculum.dept.cs': 'Department of Computer Science',
-                'admission.title': 'Admissions', 'admission.subtitle': 'Join us and start your journey towards becoming an industry leader.',
-                'admission.steps.title': 'Application Process',
-                'admission.step1.title': 'Prepare Documents', 'admission.step1.desc': 'Gather your transcripts, letters of recommendation, and statement of purpose.',
-                'admission.step2.title': 'Submit Online', 'admission.step2.desc': 'Complete the online application form and upload all required materials before the deadline.',
-                'admission.step3.title': 'Interview & Decision', 'admission.step3.desc': 'Shortlisted candidates may be invited for an interview. Admission decisions will be sent via email.',
-                'admission.contact.title': 'Contact Admissions',
-                'form.name.label': 'Full Name', 'form.email.label': 'Email Address', 'form.message.label': 'Your Message', 'form.submit': 'Send Message',
-                'faq.title': 'Frequently Asked Questions', 'faq.subtitle': 'Find answers to common questions about our program.',
-                'faq.search.placeholder': 'Search FAQs...',
-                'footer.address': 'National Chi Nan University, No. 1, Daxue Rd, Puli Township, Nantou County, 545',
-                'footer.copyright': 'Next Horizon Project Team. All Rights Reserved.',
-                'faq.q1': 'What are the admission requirements?', 'faq.a1': 'A Bachelor’s degree or equivalent; transcripts; two recommendation letters; statement of purpose.',
-                'faq.q2': 'When is the application deadline?', 'faq.a2': 'Deadlines vary by semester — check the Admission page for current dates.',
-                'faq.q3': 'Are scholarships available?', 'faq.a3': 'Merit and need-based scholarships may be available. See Admission for details.',
-                'faq.q4': 'How long is the program?', 'faq.a4': 'Standard full-time completion in 2 years (master’s coursework + thesis/project).',
-                'faq.q5': 'What is the tuition fee per semester?', 'faq.a5': 'Tuition is subject to NCNU policy; check the Admission page for the latest figures.',
-                'faq.q6': 'Is there on-campus housing?', 'faq.a6': 'On-campus housing may be available; contact student services.',
-                'faq.q7': 'Who can I contact for more information?', 'faq.a7': 'Program coordinator — email and phone listed on the Admission page.',
-                'faq.q8': 'Can I apply as an international student?', 'faq.a8': 'Yes — international applicants should follow the guidelines for foreign students.',
+                // Faculty
+                facultyHeader: "Faculty Spotlight: Our Visionary Leaders",
+                facultySubHeader: "Meet the experts driving innovation and academic excellence in management and information technology.",
+                facultyData: [
+                    { name: "Dr. Ethan Chen", title: "Professor of Digital Marketing", bio: "Expert in cross-cultural digital strategy and AI-driven consumer insights." },
+                    { name: "Dr. Maya Lin", title: "Associate Professor of IT Management", bio: "Research focus on cloud architecture, data governance, and organizational transformation." },
+                    { name: "Dr. James Huang", title: "Assistant Professor of Innovation", bio: "Specializes in venture capital, startup incubation, and disruptive business models." },
+                    { name: "Dr. Sarah Kuo", title: "Lecturer in Sustainable Management", bio: "Teaches sustainable business practices and green technology adoption." }
+                ],
+                facultyCardDetails: "View Details",
+
+                // Curriculum
+                curriculumHeader: "Curriculum Planning & Partner Departments",
+                curriculumSubHeader: "Our interdisciplinary program is built upon the strengths of these core departments, offering diverse and specialized courses.",
+                curriculumMainLinkTitle: "View Full Curriculum Plan",
+                curriculumMainLinkSubtitle: "Official BAITIA Curriculum Page",
+                curriculumData: [
+                    { name: "Department of International Studies", link: "https://baitia.ncnu.edu.tw/p/403-1084-1146.php?Lang=en" },
+                    { name: "Department of Banking and Finance", link: "https://baitia.ncnu.edu.tw/p/403-1084-1148.php?Lang=en" },
+                    { name: "Department of Economics", link: "https://baitia.ncnu.edu.tw/p/403-1084-1145.php?Lang=en" },
+                    { name: "Department of Information Management", link: "https://baitia.ncnu.edu.tw:443/p/403-1084-1147.php?Lang=en" },
+                    { name: "Department of Tourism, Leisure and Hospitality Management", link: "https://baitia.ncnu.edu.tw/p/403-1084-1149.php?Lang=en" },
+                    { name: "Department of Computer Science", link: "https://baitia.ncnu.edu.tw/p/403-1084-1151.php?Lang=en" }
+                ],
+
+                // Admission
+                admissionHeader: "Admission Information & Deadlines",
+                admissionSubHeader: "Start your application journey to join the next generation of management and IT innovators.",
+                admissionCardTitle: "Official Application Portal",
+                admissionCardText: "Find detailed requirements, eligibility criteria, and important deadlines for all academic programs offered under the BAITIA college.",
+                admissionCardButton: "Visit Official Admissions Page",
+                inquiryTitle: "Admission Inquiry",
+                inquiryText: "Have specific questions about the program? Send us a quick inquiry.",
+                inquiryButton: "Submit Inquiry",
+                inquirySuccess: "Thank you! Your dummy inquiry has been received (not functional).",
+
+
+                // FAQ
+                faqHeader: "Frequently Asked Questions",
+                faqSubHeader: "Get quick answers to common questions about the program, requirements, and faculty.",
+                faqData: [
+                    { q: "What is the primary focus of the 'Next Horizon' project?", a: "The project integrates modern management theories with practical IT skills, focusing on digital transformation, data analytics, and sustainable business innovation." },
+                    { q: "Are all courses taught in English, or is bilingual instruction available?", a: "Instruction is primarily bilingual (Mandarin and English). Core texts and specialized IT courses often use English, while lectures and discussions accommodate Traditional Chinese speakers." },
+                    { q: "What are the core admission requirements?", a: "Applicants typically require a bachelor's degree, a strong academic record, and a statement of purpose demonstrating interest in management and technology. Specifics vary by program." },
+                    { q: "How can I contact a specific faculty member?", a: "Faculty contact information (emails and office hours) is listed on the official BAITIA website's faculty page." },
+                    { q: "What career paths do graduates typically pursue?", a: "Graduates are prepared for roles in IT consulting, digital marketing, data analysis, project management, and technology entrepreneurship." }
+                ],
+
+                // Footer
+                footerCredit: "Trial website for Digital Marketing course, BAITIA, NCNU.",
+                footerLinksHeader: "Quick Links",
+                footerPrivacy: "Privacy Policy (Dummy)",
+                footerSitemap: "Sitemap (Dummy)",
+                footerNCNU: "NCNU Official Site",
+                footerContactHeader: "Contact Info",
+                footerAddress: "Nantou County, Taiwan 54561 R.O.C.",
+                ncnuCopy: "National Chi Nan University."
             },
-            'zh-TW': { // Traditional Chinese
-                'hero.title.short': '未來地平線',
-                'hero.subtitle.short': '管理與資訊創新',
-                'trail.notice': '注意：本網站為「數位行銷」課程（BAITIA選修）的小組專案試驗網站。',
-                'nav.home': '首頁', 'nav.faculty': '師資陣容', 'nav.curriculum': '課程規劃', 'nav.admission': '招生資訊', 'nav.faq': '常見問答',
-                'hero.title': '未來地平線：管理與資訊創新',
-                'hero.subtitle': '國立暨南國際大學工商管理與創新科技學系碩士班 — 融合管理策略與尖端資訊應用。',
-                'cta.apply': '立即申請', 'cta.curriculum': '查看課程',
-                'link.ncnu': '國立暨南國際大學 (NCNU)', 'link.baitia': '工商管理與創新科技學系 (BAITIA)',
-                'home.feature1.title': '學程總覽', 'home.feature1.desc': '探索融合商業敏銳度與技術專長的獨特課程，為您在數位經濟時代的領導角色做好準備。',
-                'home.feature2.title': '課程快照', 'home.feature2.desc': '了解旨在建立實用技能與理論知識的核心課程、專業領域及實作專案。',
-                'home.feature3.title': '師資亮點', 'home.feature3.desc': '向在其研究與實踐領域中處於領先地位的傑出學者及產業專家學習。',
-                'faculty.title': '師資陣容', 'faculty.subtitle': '認識引領下一代創新者的專家們。',
-                'modal.bio': '個人簡介', 'modal.pubs': '近期著作',
-                'curriculum.heading': '學程架構', 'curriculum.title': '課程規劃', 'curriculum.subtitle': '為創新領導者設計的彈性且全面的課程。',
-                'curriculum.desc': '我們的學程結合了核心管理原則與先進的資訊科技主題。有關課程、學分及畢業要求的詳細資訊，請參閱官方課程頁面。',
-                'curriculum.mainlink': '查看官方課程計畫',
-                'curriculum.dropdown.label': '探索相關學系課程：', 'curriculum.dropdown.default': '選擇一個學系...',
-                'curriculum.dept.is': '國際文教與比較教育學系', 'curriculum.dept.bf': '財務金融學系', 'curriculum.dept.econ': '經濟學系',
-                'curriculum.dept.im': '資訊管理學系', 'curriculum.dept.tourism': '觀光休閒與餐旅管理學系', 'curriculum.dept.cs': '資訊工程學系',
-                'admission.title': '招生資訊', 'admission.subtitle': '加入我們，開啟您成為產業領導者的旅程。',
-                'admission.steps.title': '申請流程',
-                'admission.step1.title': '準備文件', 'admission.step1.desc': '備齊您的成績單、推薦信及讀書計畫。',
-                'admission.step2.title': '線上提交', 'admission.step2.desc': '在截止日期前完成線上申請表並上傳所有必要文件。',
-                'admission.step3.title': '面試與錄取', 'admission.step3.desc': '入圍的申請者可能會被邀請參加面試。錄取結果將透過電子郵件通知。',
-                'admission.contact.title': '聯絡招生組',
-                'form.name.label': '全名', 'form.email.label': '電子郵件', 'form.message.label': '您的訊息', 'form.submit': '傳送訊息',
-                'faq.title': '常見問答', 'faq.subtitle': '尋找有關我們學程的常見問題解答。',
-                'faq.search.placeholder': '搜尋常見問答...',
-                'footer.address': '545 南投縣埔里鎮大學路1號 國立暨南國際大學',
-                'footer.copyright': '未來地平線專案團隊. 版權所有.',
-                'faq.q1': '入學要求是什麼？', 'faq.a1': '學士學位或同等學力證明、成績單、兩封推薦信、讀書計畫。',
-                'faq.q2': '申請截止日期是什麼時候？', 'faq.a2': '各學期截止日期不同，請查看招生資訊頁面以獲取最新日期。',
-                'faq.q3': '有提供獎學金嗎？', 'faq.a3': '可能提供基於成績和需求的獎學金。詳情請參閱招生資訊。',
-                'faq.q4': '學程為期多久？', 'faq.a4': '標準全職修業時間為2年（碩士課程＋論文/專案）。',
-                'faq.q5': '每學期的學費是多少？', 'faq.a5': '學費依暨大政策而定，請查看招生資訊頁面以獲取最新資訊。',
-                'faq.q6': '有校內住宿嗎？', 'faq.a6': '可能提供校內住宿，請聯繫學生服務中心。',
-                'faq.q7': '我可以聯繫誰以獲取更多資訊？', 'faq.a7': '學程協調員的電子郵件和電話列於招生資訊頁面。',
-                'faq.q8': '我能以國際學生身份申請嗎？', 'faq.a8': '可以，國際申請者應遵循外籍學生指導方針。',
-            },
-            'vi': { // Vietnamese
-                'hero.title.short': 'Chân Trời Mới',
-                'hero.subtitle.short': 'Quản lý & Đổi mới CNTT',
-                'trail.notice': 'Lưu ý: Đây là trang web Thử nghiệm cho một dự án nhóm của khóa học Tiếp thị Kỹ thuật số (môn tự chọn tại BAITIA).',
-                'nav.home': 'Trang chủ', 'nav.faculty': 'Giảng viên', 'nav.curriculum': 'Chương trình', 'nav.admission': 'Tuyển sinh', 'nav.faq': 'FAQ',
-                'hero.title': 'Chân Trời Mới: Quản lý & Đổi mới Công nghệ Thông tin',
-                'hero.subtitle': 'Chương trình Thạc sĩ tại BAITIA của NCNU — kết nối chiến lược quản lý với các ứng dụng CNTT tiên tiến.',
-                'cta.apply': 'Ứng tuyển ngay', 'cta.curriculum': 'Xem chương trình',
-                'link.ncnu': 'Đại học Quốc gia Chi Nan (NCNU)', 'link.baitia': 'Khoa Tuyển sinh Kinh doanh & Công nghệ Đổi mới',
-                'home.feature1.title': 'Tổng quan Chương trình', 'home.feature1.desc': 'Khám phá một chương trình giảng dạy độc đáo kết hợp sự nhạy bén trong kinh doanh với chuyên môn công nghệ, chuẩn bị cho bạn vai trò lãnh đạo trong nền kinh tế số.',
-                'home.feature2.title': 'Sơ lược Chương trình', 'home.feature2.desc': 'Khám phá các khóa học cốt lõi, chuyên ngành và các dự án thực hành được thiết kế để xây dựng kỹ năng thực tế và kiến thức lý thuyết.',
-                'home.feature3.title': 'Giảng viên Tiêu biểu', 'home.feature3.desc': 'Học hỏi từ các học giả xuất sắc và chuyên gia trong ngành, những người đi đầu trong lĩnh vực nghiên cứu và thực hành của họ.',
-                'faculty.title': 'Đội ngũ Giảng viên', 'faculty.subtitle': 'Gặp gỡ các chuyên gia hướng dẫn thế hệ các nhà đổi mới tiếp theo.',
-                'modal.bio': 'Tiểu sử', 'modal.pubs': 'Ấn phẩm gần đây',
-                'curriculum.heading': 'Cấu trúc chương trình', 'curriculum.title': 'Kế hoạch chương trình giảng dạy', 'curriculum.subtitle': 'Một chương trình giảng dạy linh hoạt và toàn diện được thiết kế cho các nhà lãnh đạo đổi mới.',
-                'curriculum.desc': 'Chương trình của chúng tôi kết hợp các nguyên tắc quản lý cốt lõi với các chủ đề CNTT tiên tiến. Để biết chi tiết về các khóa học, tín chỉ và yêu cầu tốt nghiệp, vui lòng truy cập trang chương trình giảng dạy chính thức.',
-                'curriculum.mainlink': 'Xem Kế hoạch Chương trình Chính thức',
-                'curriculum.dropdown.label': 'Khám phá Chương trình của các Khoa liên quan:', 'curriculum.dropdown.default': 'Chọn một khoa...',
-                'curriculum.dept.is': 'Khoa Nghiên cứu Quốc tế', 'curriculum.dept.bf': 'Khoa Ngân hàng và Tài chính', 'curriculum.dept.econ': 'Khoa Kinh tế',
-                'curriculum.dept.im': 'Khoa Quản lý Thông tin', 'curriculum.dept.tourism': 'Khoa Du lịch', 'curriculum.dept.cs': 'Khoa Khoa học Máy tính',
-                'admission.title': 'Tuyển sinh', 'admission.subtitle': 'Hãy tham gia cùng chúng tôi và bắt đầu hành trình trở thành một nhà lãnh đạo ngành.',
-                'admission.steps.title': 'Quy trình đăng ký',
-                'admission.step1.title': 'Chuẩn bị Hồ sơ', 'admission.step1.desc': 'Thu thập bảng điểm, thư giới thiệu và bài luận cá nhân của bạn.',
-                'admission.step2.title': 'Nộp trực tuyến', 'admission.step2.desc': 'Hoàn thành mẫu đơn đăng ký trực tuyến và tải lên tất cả các tài liệu cần thiết trước hạn chót.',
-                'admission.step3.title': 'Phỏng vấn & Quyết định', 'admission.step3.desc': 'Các ứng viên lọt vào vòng trong có thể được mời phỏng vấn. Quyết định nhập học sẽ được gửi qua email.',
-                'admission.contact.title': 'Liên hệ Tuyển sinh',
-                'form.name.label': 'Họ và tên', 'form.email.label': 'Địa chỉ email', 'form.message.label': 'Tin nhắn của bạn', 'form.submit': 'Gửi tin nhắn',
-                'faq.title': 'Các câu hỏi thường gặp', 'faq.subtitle': 'Tìm câu trả lời cho các câu hỏi phổ biến về chương trình của chúng tôi.',
-                'faq.search.placeholder': 'Tìm kiếm câu hỏi...',
-                'footer.address': 'Đại học Quốc gia Chi Nan, Số 1, Đường Daxue, Thị trấn Puli, Huyện Nantou, 545',
-                'footer.copyright': 'Nhóm Dự án Chân Trời Mới. Mọi quyền được bảo lưu.',
-                'faq.q1': 'Yêu cầu nhập học là gì?', 'faq.a1': 'Bằng Cử nhân hoặc tương đương; bảng điểm; hai thư giới thiệu; bài luận cá nhân.',
-                'faq.q2': 'Hạn chót nộp đơn là khi nào?', 'faq.a2': 'Hạn chót thay đổi theo từng học kỳ — vui lòng kiểm tra trang Tuyển sinh để biết ngày hiện tại.',
-                'faq.q3': 'Có học bổng không?', 'faq.a3': 'Có thể có học bổng dựa trên thành tích và nhu cầu. Xem chi tiết tại trang Tuyển sinh.',
-                'faq.q4': 'Chương trình kéo dài bao lâu?', 'faq.a4': 'Thời gian hoàn thành toàn thời gian tiêu chuẩn là 2 năm (học phần thạc sĩ + luận văn/dự án).',
-                'faq.q5': 'Học phí mỗi học kỳ là bao nhiêu?', 'faq.a5': 'Học phí tuân theo chính sách của NCNU; vui lòng kiểm tra trang Tuyển sinh để biết số liệu mới nhất.',
-                'faq.q6': 'Có ký túc xá trong khuôn viên trường không?', 'faq.a6': 'Có thể có ký túc xá trong khuôn viên trường; liên hệ dịch vụ sinh viên.',
-                'faq.q7': 'Tôi có thể liên hệ ai để biết thêm thông tin?', 'faq.a7': 'Điều phối viên chương trình — email và điện thoại được liệt kê trên trang Tuyển sinh.',
-                'faq.q8': 'Tôi có thể nộp đơn với tư cách là sinh viên quốc tế không?', 'faq.a8': 'Có — ứng viên quốc tế nên tuân theo các hướng dẫn dành cho sinh viên nước ngoài.',
-            },
-            'my': { // Myanmar
-                'hero.title.short': 'နောက်ထပ် မိုးကုတ်စက်ဝိုင်း',
-                'hero.subtitle.short': 'စီမံခန့်ခွဲမှုနှင့် အိုင်တီ ဆန်းသစ်တီထွင်မှု',
-                'trail.notice': 'မှတ်ချက်- ဤသည်မှာ ဒစ်ဂျစ်တယ်စျေးကွက်ရှာဖွေရေးသင်တန်း (BAITIA ရှိ ရွေးချယ်နိုင်သောဘာသာရပ်) ၏ အဖွဲ့လိုက်ပရောဂျက်အတွက် စမ်းသပ်ဝဘ်ဆိုဒ်တစ်ခုဖြစ်သည်။',
-                'nav.home': 'ပင်မစာမျက်နှာ', 'nav.faculty': 'ဆရာ/ဆရာမများ', 'nav.curriculum': 'သင်ရိုးညွှန်းတမ်း', 'nav.admission': 'ဝင်ခွင့်', 'nav.faq': 'အမေးများသောမေးခွန်းများ',
-                'hero.title': 'နောက်ထပ် မိုးကုတ်စက်ဝိုင်း - စီမံခန့်ခွဲမှုနှင့် အိုင်တီ ဆန်းသစ်တီထွင်မှု',
-                'hero.subtitle': 'NCNU ၏ BAITIA ရှိ မဟာဘွဲ့အစီအစဉ် — စီမံခန့်ခွဲမှုနည်းဗျူဟာကို ခေတ်မီ IT အသုံးချမှုများနှင့် ပေါင်းစပ်ပေးသည်။',
-                'cta.apply': 'ယခုလျှောက်ထားပါ', 'cta.curriculum': 'သင်ရိုးညွှန်းတမ်းကြည့်ရန်',
-                'link.ncnu': 'အမျိုးသား ချီနန် တက္ကသိုလ် (NCNU)', 'link.baitia': 'စီးပွားရေးဝင်ခွင့်နှင့် ဆန်းသစ်တီထွင်မှုနည်းပညာဌာန',
-                'home.feature1.title': 'အစီအစဉ် ခြုံငုံသုံးသပ်ချက်', 'home.feature1.desc': 'စီးပွားရေးကျွမ်းကျင်မှုနှင့် နည်းပညာဆိုင်ရာ ကျွမ်းကျင်မှုတို့ကို ပေါင်းစပ်ထားသော ထူးခြားသော သင်ရိုးညွှန်းတမ်းတစ်ခုကို ရှာဖွေပါ၊ ဒစ်ဂျစ်တယ်စီးပွားရေးတွင် ခေါင်းဆောင်မှုအခန်းကဏ္ဍများအတွက် သင့်ကို ပြင်ဆင်ပေးသည်။',
-                'home.feature2.title': 'သင်ရိုးညွှန်းတမ်း အကျဉ်းချုပ်', 'home.feature2.desc': 'လက်တွေ့ကျွမ်းကျင်မှုနှင့် သီအိုရီဆိုင်ရာ ဗဟုသုတများ တည်ဆောက်ရန် ဒီဇိုင်းထုတ်ထားသော အဓိကသင်တန်းများ၊ အထူးပြုလမ်းကြောင်းများနှင့် လက်တွေ့စီမံကိန်းများကို စူးစမ်းပါ။',
-                'home.feature3.title': 'ဆရာ/ဆရာမများ အထူးကဏ္ဍ', 'home.feature3.desc': 'သူတို့၏ သုတေသနနှင့် လက်တွေ့နယ်ပယ်များတွင် ဦးဆောင်သူများဖြစ်သော ထူးချွန်သော ပညာရှင်များနှင့် စက်မှုလုပ်ငန်းကျွမ်းကျင်သူများထံမှ သင်ယူပါ။',
-                'faculty.title': 'ကျွန်ုပ်တို့၏ ဆရာ/ဆရာမများ', 'faculty.subtitle': 'နောက်မျိုးဆက်သစ် ဆန်းသစ်တီထွင်သူများကို လမ်းညွှန်ပေးနေသော ကျွမ်းကျင်သူများနှင့် တွေ့ဆုံပါ။',
-                'modal.bio': 'ကိုယ်ရေးအကျဉ်း', 'modal.pubs': 'မကြာသေးမီက ထုတ်ဝေမှုများ',
-                'curriculum.heading': 'အစီအစဉ်ဖွဲ့စည်းပုံ', 'curriculum.title': 'သင်ရိုးညွှန်းတမ်း စီစဉ်ခြင်း', 'curriculum.subtitle': 'ဆန်းသစ်တီထွင်မှု ခေါင်းဆောင်များအတွက် ဒီဇိုင်းထုတ်ထားသော လိုက်လျောညီထွေရှိပြီး ပြည့်စုံသော သင်ရိုးညွှန်းတမ်း။',
-                'curriculum.desc': 'ကျွန်ုပ်တို့၏ အစီအစဉ်သည် အဓိက စီမံခန့်ခွဲမှုဆိုင်ရာ အခြေခံမူများကို ခေတ်မီ IT အကြောင်းအရာများနှင့် ပေါင်းစပ်ထားသည်။ သင်တန်းများ၊ ခရက်ဒစ်များနှင့် ဘွဲ့ရလိုအပ်ချက်များအကြောင်း အသေးစိတ်သိရှိလိုပါက တရားဝင်သင်ရိုးညွှန်းတမ်းစာမျက်နှာသို့ သွားရောက်ကြည့်ရှုပါ။',
-                'curriculum.mainlink': 'တရားဝင် သင်ရိုးညွှန်းတမ်း အစီအစဉ်ကို ကြည့်ရှုပါ',
-                'curriculum.dropdown.label': 'ဆက်စပ်ဌာနများ၏ သင်ရိုးညွှန်းတမ်းများကို စူးစမ်းပါ-', 'curriculum.dropdown.default': 'ဌာနတစ်ခုကို ရွေးချယ်ပါ...',
-                'curriculum.dept.is': 'နိုင်ငံတကာလေ့လာရေးဌာန', 'curriculum.dept.bf': 'ဘဏ်လုပ်ငန်းနှင့် ဘဏ္ဍာရေးဌာန', 'curriculum.dept.econ': 'စီးပွားရေးပညာဌာန',
-                'curriculum.dept.im': 'သတင်းအချက်အလက် စီမံခန့်ခွဲမှုဌာန', 'curriculum.dept.tourism': 'ခရီးသွားလုပ်ငန်းဌာန', 'curriculum.dept.cs': 'ကွန်ပျူတာသိပ္ပံဌာန',
-                'admission.title': 'ဝင်ခွင့်', 'admission.subtitle': 'ကျွန်ုပ်တို့နှင့် ပူးပေါင်းပြီး စက်မှုလုပ်ငန်းခေါင်းဆောင်တစ်ဦးဖြစ်လာရန် သင်၏ခရီးကို စတင်လိုက်ပါ။',
-                'admission.steps.title': 'လျှောက်လွှာတင်ခြင်း လုပ်ငန်းစဉ်',
-                'admission.step1.title': 'စာရွက်စာတမ်းများ ပြင်ဆင်ပါ', 'admission.step1.desc': 'သင်၏ အမှတ်စာရင်းများ၊ ထောက်ခံစာများနှင့် ရည်ရွယ်ချက်ဖော်ပြချက်ကို စုဆောင်းပါ။',
-                'admission.step2.title': 'အွန်လိုင်းမှ တင်သွင်းပါ', 'admission.step2.desc': 'သတ်မှတ်ရက်မတိုင်မီ အွန်လိုင်းလျှောက်လွှာပုံစံကို ဖြည့်စွက်ပြီး လိုအပ်သော အချက်အလက်အားလုံးကို တင်ပါ။',
-                'admission.step3.title': 'အင်တာဗျူးနှင့် ဆုံးဖြတ်ချက်', 'admission.step3.desc': 'ရွေးချယ်ခံရသော လျှောက်ထားသူများကို အင်တာဗျူးအတွက် ဖိတ်ခေါ်နိုင်ပါသည်။ ဝင်ခွင့်ဆုံးဖြတ်ချက်များကို အီးမေးလ်မှတစ်ဆင့် ပေးပို့ပါမည်။',
-                'admission.contact.title': 'ဝင်ခွင့်ဌာနသို့ ဆက်သွယ်ရန်',
-                'form.name.label': 'အမည်အပြည့်အစုံ', 'form.email.label': 'အီးမေးလ်လိပ်စာ', 'form.message.label': 'သင်၏ မက်ဆေ့ချ်', 'form.submit': 'မက်ဆေ့ချ်ပို့ပါ',
-                'faq.title': 'အမေးများသောမေးခွန်းများ', 'faq.subtitle': 'ကျွန်ုပ်တို့၏ အစီအစဉ်နှင့် ပတ်သက်၍ အမေးများသောမေးခွန်းများ၏ အဖြေများကို ရှာဖွေပါ။',
-                'faq.search.placeholder': 'အမေးများသောမေးခွန်းများကို ရှာဖွေပါ...',
-                'footer.address': 'အမျိုးသား ချီနန် တက္ကသိုလ်၊ အမှတ် ၁၊ တက္ကသိုလ်လမ်း၊ ပူလီမြို့နယ်၊ နန်ထောင်ခရိုင်၊ ၅၄၅',
-                'footer.copyright': 'နောက်ထပ် မိုးကုတ်စက်ဝိုင်း ပရောဂျက်အဖွဲ့။ မူပိုင်ခွင့်များရယူပြီး။',
-                'faq.q1': 'ဝင်ခွင့်လိုအပ်ချက်များက ဘာတွေလဲ။', 'faq.a1': 'ဘွဲ့ဒီဂရီ သို့မဟုတ် ညီမျှသောဘွဲ့၊ အမှတ်စာရင်းများ၊ ထောက်ခံစာနှစ်စောင်၊ ရည်ရွယ်ချက်ဖော်ပြချက်။',
-                'faq.q2': 'လျှောက်လွှာပိတ်ရက်က ဘယ်တော့လဲ။', 'faq.a2': 'ပိတ်ရက်များသည် စာသင်နှစ်အလိုက် ကွဲပြားသည် — လက်ရှိရက်စွဲများအတွက် ဝင်ခွင့်စာမျက်နှာကို စစ်ဆေးပါ။',
-                'faq.q3': 'ပညာသင်ဆုများ ရနိုင်ပါသလား။', 'faq.a3': 'အရည်အချင်းနှင့် လိုအပ်ချက်အပေါ်မူတည်သော ပညာသင်ဆုများ ရနိုင်ပါသည်။ အသေးစိတ်အတွက် ဝင်ခွင့်စာမျက်နှာကို ကြည့်ပါ။',
-                'faq.q4': 'အစီအစဉ်က ဘယ်လောက်ကြာပါသလဲ။', 'faq.a4': 'ပုံမှန်အချိန်ပြည့် ပြီးမြောက်ရန် ၂ နှစ် (မဟာဘွဲ့သင်တန်း + ကျမ်း/စီမံကိန်း)။',
-                'faq.q5': 'တစ်နှစ်စာသင်စရိတ် ဘယ်လောက်လဲ။', 'faq.a5': 'ကျူရှင်ခသည် NCNU မူဝါဒအရဖြစ်သည်၊ နောက်ဆုံးအချက်အလက်များအတွက် ဝင်ခွင့်စာမျက်နှာကို စစ်ဆေးပါ။',
-                'faq.q6': 'ကျောင်းဝင်းအတွင်း အဆောင်နေထိုင်ခွင့် ရှိပါသလား။', 'faq.a6': 'ကျောင်းဝင်းအတွင်း အဆောင်နေထိုင်ခွင့် ရနိုင်သည်၊ ကျောင်းသားဝန်ဆောင်မှုဌာနသို့ ဆက်သွယ်ပါ။',
-                'faq.q7': 'နောက်ထပ်အချက်အလက်များအတွက် ဘယ်သူ့ကို ဆက်သွယ်ရမလဲ။', 'faq.a7': 'အစီအစဉ်ညှိနှိုင်းရေးမှူး — အီးမေးလ်နှင့် ဖုန်းနံပါတ်ကို ဝင်ခွင့်စာမျက်နှာတွင် ဖော်ပြထားသည်။',
-                'faq.q8': 'နိုင်ငံတကာကျောင်းသားအနေနဲ့ လျှောက်ထားလို့ရပါသလား။', 'faq.a8': 'ဟုတ်ကဲ့ — နိုင်ငံတကာလျှောက်ထားသူများသည် နိုင်ငံခြားကျောင်းသားများအတွက် လမ်းညွှန်ချက်များကို လိုက်နာသင့်သည်။',
+
+            TC: {
+                // Header & Nav (Traditional Chinese)
+                projectTitle: "下一波願景：管理與資訊科技創新",
+                projectTitleShort: "下一波願景：管理與資科創新",
+                ncnuLink: "國立暨南國際大學 (暨大)",
+                baitiaLink: "企業倫理、資訊與科技創新應用學系 (企資科系)",
+                navHome: "首頁",
+                navFaculty: "師資陣容",
+                navCurriculum: "課程規劃",
+                navAdmission: "招生資訊",
+                navFAQ: "常見問題",
+
+                // Home
+                heroTitle: "創新未來商業與科技的藍海",
+                heroSubtitle: "由暨大管理學院主導的協同專案，專注於數位轉型、創業精神與永續資訊科技解決方案。",
+                heroButton: "前往企資科系專案首頁",
+
+                // Faculty
+                facultyHeader: "師資陣容：我們的領航者",
+                facultySubHeader: "認識在管理與資訊科技領域推動創新與學術卓越的專家們。",
+                facultyData: [
+                    { name: "陳教授 (Ethan Chen)", title: "數位行銷學教授", bio: "專精於跨文化數位策略與AI驅動的消費者洞察分析。" },
+                    { name: "林博士 (Maya Lin)", title: "資訊科技管理副教授", bio: "研究重點為雲端架構、數據治理和組織轉型。" },
+                    { name: "黃助理教授 (James Huang)", title: "創新學助理教授", bio: "專注於風險投資、新創公司孵化和顛覆性商業模式。" },
+                    { name: "郭講師 (Sarah Kuo)", title: "永續管理學講師", bio: "教授永續商業實踐和綠色技術應用。" }
+                ],
+                facultyCardDetails: "查看詳情",
+
+                // Curriculum
+                curriculumHeader: "課程規劃與合作學系",
+                curriculumSubHeader: "我們的跨學科課程建立在這些核心學系的優勢之上，提供多元化和專業化的課程。",
+                curriculumMainLinkTitle: "查看完整課程規劃",
+                curriculumMainLinkSubtitle: "企資科系官方課程頁面",
+                curriculumData: [
+                    { name: "國際企業學系", link: "https://baitia.ncnu.edu.tw/p/403-1084-1146.php?Lang=en" },
+                    { name: "銀行與金融學系", link: "https://baitia.ncnu.edu.tw/p/403-1084-1148.php?Lang=en" },
+                    { name: "經濟學系", link: "https://baitia.ncnu.edu.tw/p/403-1084-1145.php?Lang=en" },
+                    { name: "資訊管理學系", link: "https://baitia.ncnu.edu.tw:443/p/403-1084-1147.php?Lang=en" },
+                    { name: "觀光休閒與餐旅管理學系", link: "https://baitia.ncnu.edu.tw/p/403-1084-1149.php?Lang=en" },
+                    { name: "資訊工程學系", link: "https://baitia.ncnu.edu.tw/p/403-1084-1151.php?Lang=en" }
+                ],
+
+                // Admission
+                admissionHeader: "招生資訊與重要時程",
+                admissionSubHeader: "開始您的申請旅程，加入下一代管理與資訊科技的創新者行列。",
+                admissionCardTitle: "官方申請入口",
+                admissionCardText: "查找所有暨大管理學院企資科系提供之學術課程的詳細要求、資格標準和重要截止日期。",
+                admissionCardButton: "前往官方招生頁面",
+                inquiryTitle: "招生諮詢",
+                inquiryText: "對課程有特定的疑問嗎？請發送快速諮詢。",
+                inquiryButton: "提交諮詢",
+                inquirySuccess: "感謝您！您的試驗諮詢已收到（非功能性）。",
+
+                // FAQ
+                faqHeader: "常見問題解答",
+                faqSubHeader: "快速獲取有關課程、要求和師資的常見問題答案。",
+                faqData: [
+                    { q: "「下一波願景」專案的核心重點是什麼？", a: "該專案將現代管理理論與實用的資訊科技技能相結合，重點關注數位轉型、數據分析和永續商業創新。" },
+                    { q: "所有課程都以英文授課，還是提供雙語教學？", a: "教學主要採用雙語（中文和英文）。核心教材和專業 IT 課程通常使用英文，而講座和討論則會顧及繁體中文使用者。" },
+                    { q: "核心入學要求有哪些？", a: "申請者通常需要學士學位、良好的學術成績和一份旨在表明對管理和技術興趣的個人陳述。具體要求因課程而異。" },
+                    { q: "我該如何聯繫特定的教職員？", a: "教職員的聯繫方式（電子郵件和辦公時間）列於企資科系官方網站的師資頁面上。" },
+                    { q: "畢業生通常從事哪些職業道路？", a: "畢業生為從事 IT 顧問、數位行銷、數據分析、專案管理和技術創業等領域的工作做好準備。" }
+                ],
+
+                // Footer
+                footerCredit: "國立暨南國際大學管理學院企資科系「數位行銷」課程專題試驗網站。",
+                footerLinksHeader: "快速連結",
+                footerPrivacy: "隱私政策 (試驗)",
+                footerSitemap: "網站地圖 (試驗)",
+                footerNCNU: "暨大官方網站",
+                footerContactHeader: "聯繫資訊",
+                footerAddress: "中華民國54561南投縣埔里鎮大學路1號",
+                ncnuCopy: "國立暨南國際大學版權所有。"
             }
         };
 
-        const facultyData = [
-            {
-                id: 1, name: 'Dr. Evelyn Reed', title: 'Professor, Dept. Head', email: 'ereed@example.com',
-                img: 'https://placehold.co/256x256/E0F2FE/3B82F6?text=ER',
-                tags: ['AI in Business', 'Digital Transformation'],
-                bio: 'Dr. Reed is a leading expert in applying artificial intelligence to solve complex business problems. Her research focuses on strategic digital transformation and data-driven decision making.',
-                publications: ['The Algorithmic Enterprise (2023)', 'Predictive Models for Market Analysis (2021)', 'AI Ethics in Corporate Governance (2020)']
-            },
-            {
-                id: 2, name: 'Dr. Kenji Tanaka', title: 'Associate Professor', email: 'ktanaka@example.com',
-                img: 'https://placehold.co/256x256/D1FAE5/059669?text=KT',
-                tags: ['Cybersecurity', 'Information Systems'],
-                bio: 'Dr. Tanaka specializes in information security management and resilient system design. He has consulted for numerous Fortune 500 companies on cybersecurity strategy.',
-                publications: ['Holistic Security Frameworks (2022)', 'Blockchain for Supply Chain (2021)', 'Risk Management in the Cloud (2019)']
-            },
-            {
-                id: 3, name: 'Dr. Maria Garcia', title: 'Assistant Professor', email: 'mgarcia@example.com',
-                img: 'https://placehold.co/256x256/FEF3C7/D97706?text=MG',
-                tags: ['FinTech', 'Blockchain'],
-                bio: 'Dr. Garcia\'s work explores the intersection of finance and technology, particularly in the areas of decentralized finance (DeFi) and blockchain applications for asset management.',
-                publications: ['DeFi and the Future of Banking (2023)', 'Smart Contracts in Insurance (2022)', 'Tokenomics and Valuation (2021)']
-            },
-            {
-                id: 4, name: 'Dr. Samuel Chen', title: 'Professor', email: 'schen@example.com',
-                img: 'https://placehold.co/256x256/FEE2E2/DC2626?text=SC',
-                tags: ['Data Analytics', 'IT Project Management'],
-                bio: 'With over 20 years of industry experience before entering academia, Dr. Chen brings a practical approach to teaching data analytics and agile project management for large-scale IT initiatives.',
-                publications: ['Agile Methodologies at Scale (2022)', 'Visualizing Big Data (2020)', 'Leadership in Tech Teams (2018)']
-            },
-        ];
-
-        const faqData = [
-            { qKey: 'faq.q1', aKey: 'faq.a1' }, { qKey: 'faq.q2', aKey: 'faq.a2' },
-            { qKey: 'faq.q3', aKey: 'faq.a3' }, { qKey: 'faq.q4', aKey: 'faq.a4' },
-            { qKey: 'faq.q5', aKey: 'faq.a5' }, { qKey: 'faq.q6', aKey: 'faq.a6' },
-            { qKey: 'faq.q7', aKey: 'faq.a7' }, { qKey: 'faq.q8', aKey: 'faq.a8' },
-        ];
-
-
-        // --- UI ELEMENTS ---
-        const languageSwitcher = document.getElementById('language-switcher');
+        let currentLang = 'E'; // Default to English
+        const langToggle = document.getElementById('lang-toggle');
         const themeToggle = document.getElementById('theme-toggle');
-        const lightIcon = document.getElementById('theme-icon-light');
-        const darkIcon = document.getElementById('theme-icon-dark');
-        const dismissNoticeBtn = document.getElementById('dismiss-notice-btn');
-        const trialNotice = document.getElementById('trial-notice');
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-        const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
-        const pageSections = document.querySelectorAll('.page-section');
-        const facultyGrid = document.getElementById('faculty-grid');
-        const facultyModal = document.getElementById('faculty-modal');
-        const facultyModalPanel = document.getElementById('faculty-modal-panel');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const departmentLinksDropdown = document.getElementById('department-links');
-        const faqContainer = document.getElementById('faq-container');
-        const faqSearch = document.getElementById('faq-search');
-        const contactForm = document.getElementById('contact-form');
-        const formStatus = document.getElementById('form-status');
 
-        // --- I18N (Internationalization) ---
-        let currentLang = localStorage.getItem('language') || 'en';
-
-        const switchLanguage = (lang) => {
-            currentLang = lang;
-            localStorage.setItem('language', lang);
-            document.documentElement.lang = lang;
-            languageSwitcher.value = lang;
-
-            document.querySelectorAll('[data-i18n-key]').forEach(el => {
-                const key = el.getAttribute('data-i18n-key');
-                if (translations[lang] && translations[lang][key]) {
-                    if (el.tagName === 'INPUT' && el.type === 'search') {
-                       el.placeholder = translations[lang]['faq.search.placeholder'];
-                    } else {
-                       el.innerText = translations[lang][key];
-                    }
-                }
-            });
-            // Update dynamic content
-            renderFaculty();
-            renderFAQs();
-        };
-
-        // --- THEME ---
-        const applyTheme = (theme) => {
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                lightIcon.classList.add('hidden');
-                darkIcon.classList.remove('hidden');
-            } else {
-                document.documentElement.classList.remove('dark');
-                lightIcon.classList.remove('hidden');
-                darkIcon.classList.add('hidden');
+        /**
+         * Converts a string to a simple hash for a mock photo URL.
+         * @param {string} str - The input string (e.g., faculty name).
+         * @returns {number} - A number between 1 and 100 for a placeholder image.
+         */
+        function stringToHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
             }
-        };
+            return Math.abs(hash % 100) + 1;
+        }
 
-        const toggleTheme = () => {
-            const currentTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-            localStorage.setItem('theme', currentTheme);
-            applyTheme(currentTheme);
-        };
+        // --- DOM Generation Functions ---
 
-        // --- SPA NAVIGATION ---
-        const showPage = (pageId) => {
-            pageSections.forEach(section => {
-                section.classList.add('hidden');
-            });
-            const activePage = document.getElementById(pageId);
-            if (activePage) {
-                activePage.classList.remove('hidden');
-            } else {
-                // Fallback to home if page not found
-                document.getElementById('home-page').classList.remove('hidden');
-            }
+        /**
+         * Populates the Faculty grid dynamically.
+         * @param {Object[]} facultyData - Array of faculty members.
+         * @param {string} detailsText - The translated 'View Details' text.
+         */
+        function renderFaculty(facultyData, detailsText) {
+            const container = document.getElementById('faculty-grid');
+            container.innerHTML = '';
+            facultyData.forEach(member => {
+                const imageUrl = `https://placehold.co/400x400/0066cc/ffffff?text=${member.name.split(' ')[0]}`; // Simple placeholder
+                const hash = stringToHash(member.name);
+                const gender = (hash % 2 === 0) ? 'men' : 'women';
+                const avatarUrl = `https://randomuser.me/api/portraits/${gender}/${hash}.jpg`;
 
-            // Update active nav link style
-            navLinks.forEach(link => {
-                if (link.dataset.page === pageId || (pageId === 'home-page' && link.dataset.i18nKey === 'nav.home')) {
-                    link.setAttribute('aria-current', 'page');
-                } else {
-                    link.removeAttribute('aria-current');
-                }
-            });
-            
-            // Close mobile menu on navigation
-            mobileMenu.classList.add('hidden');
-        };
+                const card = `
+                    <div class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden animate-subtle transform hover:scale-[1.02] cursor-pointer" onclick="toggleModal('modal-${member.name.replace(/\s/g, '-')}')">
+                        <div class="relative">
+                            <img src="${avatarUrl}" onerror="this.onerror=null;this.src='${imageUrl}'" alt="${member.name} photo" class="w-full h-48 object-cover object-top transition duration-500 group-hover:brightness-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-4">
+                                <h3 class="text-xl font-bold text-white">${member.name}</h3>
+                                <p class="text-sm text-gray-200">${member.title}</p>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">${member.bio}</p>
+                            <button class="mt-3 text-ncnu-blue hover:text-ncnu-blue-light text-sm font-medium flex items-center" aria-label="${detailsText} for ${member.name}">
+                                ${detailsText} <i data-lucide="chevrons-right" class="w-4 h-4 ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
 
-        // --- DYNAMIC CONTENT RENDERING ---
-
-        const renderFaculty = () => {
-            if (!facultyGrid) return;
-            facultyGrid.innerHTML = '';
-            facultyData.forEach(prof => {
-                const card = document.createElement('div');
-                card.className = 'text-center p-6 bg-slate-100 dark:bg-slate-800 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer';
-                card.innerHTML = `
-                    <img class="w-24 h-24 mx-auto rounded-full object-cover" src="${prof.img}" alt="Profile photo of ${prof.name}">
-                    <h3 class="mt-4 text-lg font-semibold">${prof.name}</h3>
-                    <p class="text-sm text-blue-600 dark:text-blue-400">${prof.title}</p>
-                    <div class="mt-2 flex flex-wrap gap-1 justify-center">
-                        ${prof.tags.map(tag => `<span class="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full">${tag}</span>`).join('')}
+                    <!-- Mock Modal for Expanded Info (Hidden) -->
+                    <div id="modal-${member.name.replace(/\s/g, '-')}" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none animate-subtle" role="dialog" aria-modal="true" aria-labelledby="modal-title-${member.name.replace(/\s/g, '-')}" tabindex="-1">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-11/12 max-w-lg transform translate-y-4 transition duration-300 ease-out">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 id="modal-title-${member.name.replace(/\s/g, '-')}" class="text-2xl font-bold text-ncnu-blue">${member.name}</h4>
+                                <button onclick="toggleModal('modal-${member.name.replace(/\s/g, '-')}')" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300" aria-label="Close Modal">
+                                    <i data-lucide="x" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3">${member.title}</p>
+                            <p class="text-gray-700 dark:text-gray-300">${member.bio} ${member.bio} (This is a mock expansion of the bio to show modal functionality).</p>
+                        </div>
                     </div>
                 `;
-                card.addEventListener('click', () => openFacultyModal(prof.id));
-                facultyGrid.appendChild(card);
+                container.insertAdjacentHTML('beforeend', card);
             });
-        };
+            // Re-render Lucide icons inside the newly added cards
+            lucide.createIcons();
+        }
 
-        const renderFAQs = () => {
-             if (!faqContainer) return;
-             faqContainer.innerHTML = '';
-             faqData.forEach((faq, index) => {
-                 const div = document.createElement('div');
-                 div.className = 'border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden faq-item';
-                 const questionText = translations[currentLang][faq.qKey] || translations['en'][faq.qKey];
-                 const answerText = translations[currentLang][faq.aKey] || translations['en'][faq.aKey];
-                 
-                 div.innerHTML = `
-                    <h3>
-                        <button class="accordion-toggle w-full flex justify-between items-center text-left p-4 font-medium hover:bg-slate-100 dark:hover:bg-slate-700/50" aria-expanded="false" aria-controls="faq-panel-${index}">
-                            <span>${questionText}</span>
-                            <svg class="w-5 h-5 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        /**
+         * Populates the Curriculum list dynamically.
+         * @param {Object[]} curriculumData - Array of partner departments.
+         */
+        function renderCurriculum(curriculumData) {
+            const container = document.getElementById('curriculum-list');
+            container.innerHTML = '';
+            curriculumData.forEach((dept, index) => {
+                const deptId = `dept-${index}`;
+                const item = `
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-shadow duration-300 hover:shadow-md">
+                        <button class="flex justify-between items-center w-full p-4 text-left font-semibold text-ncnu-blue dark:text-ncnu-blue-light hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200" onclick="toggleAccordion('${deptId}', this)" aria-expanded="false" aria-controls="${deptId}">
+                            <span>${dept.name}</span>
+                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300 transform"></i>
                         </button>
-                    </h3>
-                    <div id="faq-panel-${index}" class="accordion-content px-4 pb-4 text-slate-600 dark:text-slate-300">
-                        <p>${answerText}</p>
+                        <div id="${deptId}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-white dark:bg-gray-900" aria-hidden="true">
+                            <div class="p-4 pt-0 text-sm text-gray-700 dark:text-gray-300">
+                                <p data-i18n="curriculumDeptDescription"></p>
+                                <a href="${dept.link}" target="_blank" class="text-ncnu-blue hover:text-ncnu-blue-light font-medium mt-2 inline-block" role="link">
+                                    Official Department Link <i data-lucide="link" class="w-4 h-4 inline-block ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                 `;
-                 faqContainer.appendChild(div);
-             });
-             addAccordionListeners();
-        };
+                `;
+                container.insertAdjacentHTML('beforeend', item);
+            });
+            // Re-render Lucide icons inside the newly added accordions
+            lucide.createIcons();
+            // Bind the TC description text
+            document.querySelectorAll('#curriculum-list [data-i18n="curriculumDeptDescription"]').forEach(el => {
+                const tcText = currentLang === 'TC'
+                    ? '該學系提供與本專案跨領域結合的核心知識和專業技能，詳情請點擊下方連結。'
+                    : 'This department provides core knowledge and expertise that cross-links with the goals of this project. Click the link below for details.';
+                el.textContent = tcText;
+            });
+        }
 
-        const addAccordionListeners = () => {
-            document.querySelectorAll('.accordion-toggle').forEach(button => {
-                 button.addEventListener('click', () => {
-                     const isExpanded = button.getAttribute('aria-expanded') === 'true';
-                     button.setAttribute('aria-expanded', !isExpanded);
-                     const content = button.parentElement.nextElementSibling;
-                     content.classList.toggle('open');
-                     button.querySelector('svg').classList.toggle('rotate-180');
-                 });
-             });
-        };
+        /**
+         * Populates the FAQ accordion dynamically.
+         * @param {Object[]} faqData - Array of Q&A objects.
+         */
+        function renderFAQ(faqData) {
+            const container = document.getElementById('faq-accordion');
+            container.innerHTML = '';
+            faqData.forEach((item, index) => {
+                const faqId = `faq-${index}`;
+                const accordionItem = `
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <h3 class="text-lg font-semibold" id="heading-${faqId}">
+                            <button class="flex justify-between items-center w-full p-4 text-left text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200" onclick="toggleAccordion('${faqId}', this)" aria-expanded="false" aria-controls="${faqId}">
+                                ${item.q}
+                                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300 transform text-ncnu-blue"></i>
+                            </button>
+                        </h3>
+                        <div id="${faqId}" role="region" aria-labelledby="heading-${faqId}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800" aria-hidden="true">
+                            <div class="p-4 text-gray-700 dark:text-gray-300">
+                                ${item.a}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', accordionItem);
+            });
+            // Re-render Lucide icons
+            lucide.createIcons();
+        }
 
-        // --- MODAL LOGIC ---
-        const openFacultyModal = (profId) => {
-            const prof = facultyData.find(p => p.id === profId);
-            if (!prof) return;
+        // --- Utility Functions ---
 
-            document.getElementById('modal-img').src = prof.img;
-            document.getElementById('modal-img').alt = `Profile photo of ${prof.name}`;
-            document.getElementById('modal-name').innerText = prof.name;
-            document.getElementById('modal-title').innerText = prof.title;
-            document.getElementById('modal-email').innerText = prof.email;
-            document.getElementById('modal-bio').innerText = prof.bio;
-            
-            const tagsContainer = document.getElementById('modal-tags');
-            tagsContainer.innerHTML = prof.tags.map(tag => `<span class="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full">${tag}</span>`).join('');
-            
-            const pubsList = document.getElementById('modal-pubs');
-            pubsList.innerHTML = prof.publications.map(pub => `<li>${pub}</li>`).join('');
+        /**
+         * Generic function to toggle Accordion (for Curriculum and FAQ).
+         * @param {string} id - The ID of the content div to toggle.
+         * @param {HTMLElement} button - The button element that triggered the action.
+         */
+        function toggleAccordion(id, button) {
+            const content = document.getElementById(id);
+            const icon = button.querySelector('i');
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-            facultyModal.classList.remove('hidden');
-            setTimeout(() => {
-                facultyModalPanel.classList.remove('opacity-0', 'translate-y-4');
-            }, 10);
-        };
+            if (isExpanded) {
+                content.style.maxHeight = '0';
+                button.setAttribute('aria-expanded', 'false');
+                content.setAttribute('aria-hidden', 'true');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Set maxHeight to the scroll height for smooth transition
+                content.style.maxHeight = content.scrollHeight + 'px';
+                button.setAttribute('aria-expanded', 'true');
+                content.setAttribute('aria-hidden', 'false');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
 
-        const closeFacultyModal = () => {
-            facultyModalPanel.classList.add('opacity-0', 'translate-y-4');
-            setTimeout(() => {
-                facultyModal.classList.add('hidden');
-            }, 300);
-        };
-        
-        // --- EVENT LISTENERS ---
+        /**
+         * Toggles the visibility of the mock faculty modal.
+         * @param {string} id - The ID of the modal div to toggle.
+         */
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                const isVisible = modal.classList.contains('opacity-100');
+                if (isVisible) {
+                    modal.classList.remove('opacity-100', 'pointer-events-auto');
+                    modal.querySelector('div').classList.remove('translate-y-0');
+                    modal.querySelector('div').classList.add('translate-y-4');
+                    document.body.style.overflow = ''; // Restore scrolling
+                } else {
+                    modal.classList.add('opacity-100', 'pointer-events-auto');
+                    modal.querySelector('div').classList.remove('translate-y-4');
+                    modal.querySelector('div').classList.add('translate-y-0');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                }
+            }
+        }
 
-        languageSwitcher.addEventListener('change', (e) => switchLanguage(e.target.value));
-        themeToggle.addEventListener('click', toggleTheme);
-        dismissNoticeBtn.addEventListener('click', () => trialNotice.style.display = 'none');
-        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const page = link.dataset.page;
-                if (page) {
-                    e.preventDefault();
-                    showPage(page);
-                    window.history.pushState({page: page}, '', `#${page.replace('-page', '')}`);
+        /**
+         * Shows a success message for the dummy contact form.
+         */
+        function showContactMessage() {
+            const message = document.getElementById('contact-message');
+            message.style.display = 'block';
+            setTimeout(() => message.style.display = 'none', 3000);
+        }
+
+        // --- Language and Theme Logic ---
+
+        /**
+         * Updates all text content on the page based on the current language.
+         */
+        function updateLanguage() {
+            const langData = bilingualContent[currentLang];
+            // 1. Update text content
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (langData[key]) {
+                    el.textContent = langData[key];
                 }
             });
-        });
 
-        window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.page) {
-                showPage(e.state.page);
-            } else {
-                const pageFromHash = window.location.hash.substring(1) + '-page';
-                const validPage = Array.from(pageSections).some(s => s.id === pageFromHash);
-                showPage(validPage ? pageFromHash : 'home-page');
-            }
-        });
+            // 2. Render dynamic sections (Faculty, Curriculum, FAQ)
+            renderFaculty(langData.facultyData, langData.facultyCardDetails);
+            renderCurriculum(langData.curriculumData);
+            renderFAQ(langData.faqData);
 
-        closeModalBtn.addEventListener('click', closeFacultyModal);
-        facultyModal.addEventListener('click', (e) => {
-            if (e.target === facultyModal) closeFacultyModal();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !facultyModal.classList.contains('hidden')) {
-                closeFacultyModal();
-            }
-        });
+            // 3. Update the lang attribute on the HTML element for accessibility
+            document.documentElement.lang = (currentLang === 'E') ? 'en' : 'zh-TW';
+        }
 
-        departmentLinksDropdown.addEventListener('change', (e) => {
-            if (e.target.value) {
-                window.open(e.target.value, '_blank');
-            }
-        });
-        
-        faqSearch.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            document.querySelectorAll('.faq-item').forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        });
+        /**
+         * Toggles the language between English (E) and Traditional Chinese (TC).
+         */
+        function toggleLanguage() {
+            currentLang = (currentLang === 'E') ? 'TC' : 'E';
+            updateLanguage();
+        }
 
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            formStatus.textContent = 'Thank you for your message! We will get back to you soon.';
-            formStatus.className = 'mt-4 text-center text-green-600 dark:text-green-400';
-            contactForm.reset();
-            setTimeout(() => { formStatus.textContent = ''; }, 5000);
-        });
+        /**
+         * Toggles the Dark/Light theme and saves the preference to localStorage.
+         */
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeIcon.setAttribute('data-lucide', isDark ? 'moon' : 'sun');
+            lucide.createIcons(); // Re-render icon
+        }
 
-        // --- INITIALIZATION ---
-        const init = () => {
-            // Set year in footer
-            document.getElementById('footer-year').textContent = new Date().getFullYear();
+        /**
+         * Initializes the website: sets current year, theme, and language.
+         */
+        function initialize() {
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
 
-            // Set theme
+            // Load saved theme preference
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (savedTheme) {
-                applyTheme(savedTheme);
+
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                themeIcon.setAttribute('data-lucide', 'moon');
             } else {
-                applyTheme(prefersDark ? 'dark' : 'light');
+                themeIcon.setAttribute('data-lucide', 'sun');
             }
+            lucide.createIcons(); // Initial icon rendering
 
-            // Set language
-            switchLanguage(currentLang);
-            
-            // Initial page load routing
-            const initialPage = window.location.hash.substring(1);
-            if (initialPage) {
-                showPage(`${initialPage}-page`);
-            } else {
-                showPage('home-page');
-            }
+            // Set initial language (default to English for load)
+            updateLanguage();
 
-            // Render dynamic content
-            renderFaculty();
-            renderFAQs();
-        };
+            // Event Listeners
+            langToggle.addEventListener('click', toggleLanguage);
+            themeToggle.addEventListener('click', toggleTheme);
 
-        init();
-    });
+            // Mobile Menu Toggle
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('open');
+                mobileMenuButton.querySelector('i').setAttribute('data-lucide', mobileMenu.classList.contains('open') ? 'x' : 'menu');
+                lucide.createIcons();
+            });
+
+            // Close mobile menu on nav link click
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('open');
+                    mobileMenuButton.querySelector('i').setAttribute('data-lucide', 'menu');
+                    lucide.createIcons();
+                });
+            });
+
+            // Add smooth scrolling to internal links (already set on <html> but good practice)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        }
+
+        // Run initialization on window load
+        window.onload = initialize;
+
     </script>
-
 </body>
 </html>
